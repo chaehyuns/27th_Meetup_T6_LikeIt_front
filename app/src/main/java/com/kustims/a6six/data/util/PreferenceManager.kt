@@ -2,6 +2,13 @@ package com.kustims.a6six.data.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.telephony.PhoneNumberUtils
+import com.google.android.material.internal.NavigationMenu
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.kustims.a6six.data.Constants.KEY_ACCESS_TOKEN
+import com.kustims.a6six.data.Constants.KEY_REFRESH_TOKEN
+import java.io.FilterInputStream
 
 
 class PreferenceManager(
@@ -17,8 +24,15 @@ class PreferenceManager(
         private const val DEFAULT_VALUE_FLOAT = -1f
 
         const val KEY_ID_TOKEN = "ID_TOKEN"
-        const val KEY_ACCESS_TOKEN = "ACCESS_TOKEN"
-        const val KEY_REFRESH_TOKEN = "REFRESH_TOKEN"
+        const val ACCESS_TOKEN = "accessToken"
+        const val REFRESH_TOKEN = "refreshToken"
+        const val Filters = "filters"
+        const val IMG_URL = "imageUrl"
+        const val NAME = "name"
+        const val NICKNAME = "nickname"
+        const val PHONENUMBER = "phoneNumber"
+        const val EMAIL = "email"
+        const val BIRTHDATE ="birthDate"
     }
 
     private fun getPreferences(context: Context): SharedPreferences {
@@ -31,7 +45,6 @@ class PreferenceManager(
 
     /**
      * String 값 저장
-     * @param context
      * @param key
      * @param value
      */
@@ -42,7 +55,6 @@ class PreferenceManager(
 
     /**
      * boolean 값 저장
-     * @param context
      * @param key
      * @param value
      */
@@ -53,7 +65,6 @@ class PreferenceManager(
 
     /**
      * int 값 저장
-     * @param context
      * @param key
      * @param value
      */
@@ -64,7 +75,6 @@ class PreferenceManager(
 
     /**
      * long 값 저장
-     * @param context
      * @param key
      * @param value
      */
@@ -75,7 +85,6 @@ class PreferenceManager(
 
     /**
      * float 값 저장
-     * @param context
      * @param key
      * @param value
      */
@@ -86,7 +95,6 @@ class PreferenceManager(
 
     /**
      * String 값 로드
-     * @param context
      * @param key
      * @return
      */
@@ -96,7 +104,6 @@ class PreferenceManager(
 
     /**
      * boolean 값 로드
-     * @param context
      * @param key
      * @return
      */
@@ -106,7 +113,6 @@ class PreferenceManager(
 
     /**
      * int 값 로드
-     * @param context
      * @param key
      * @return
      */
@@ -116,7 +122,6 @@ class PreferenceManager(
 
     /**
      * long 값 로드
-     * @param context
      * @param key
      * @return
      */
@@ -126,7 +131,6 @@ class PreferenceManager(
 
     /**
      * float 값 로드
-     * @param context
      * @param key
      * @return
      */
@@ -136,7 +140,6 @@ class PreferenceManager(
 
     /**
      * 키 값 삭제
-     * @param context
      * @param key
      */
     fun removeKey(key: String?) {
@@ -146,7 +149,6 @@ class PreferenceManager(
 
     /**
      * 모든 저장 데이터 삭제
-     * @param context
      */
     fun clear() {
         editor.clear()
@@ -154,22 +156,71 @@ class PreferenceManager(
     }
 
     fun putAccessToken(accessToken: String) {
-        editor.putString(KEY_ACCESS_TOKEN, accessToken)
+        editor.putString(ACCESS_TOKEN, accessToken)
         editor.apply()
     }
 
     fun putAuthToken(accessToken: String, refreshToken: String) {
-        editor.putString(KEY_ACCESS_TOKEN, accessToken)
-        editor.putString(KEY_REFRESH_TOKEN, refreshToken)
+        editor.putString(ACCESS_TOKEN, accessToken)
+        editor.putString(REFRESH_TOKEN, refreshToken)
         editor.apply()
     }
 
-    fun getIdToken(): String? {
-        return prefs.getString(KEY_ID_TOKEN, null)
+    fun getAccessToken(): String? {
+        return prefs.getString(ACCESS_TOKEN, null)
     }
 
-    fun removeIdToken() {
-        editor.putString(KEY_ID_TOKEN, null)
+    fun getRefreshToken(): String? {
+        return prefs.getString(REFRESH_TOKEN, null)
+    }
+
+    fun putFilters(filters: List<String>) {
+        val jsonString = Gson().toJson(filters)
+        editor.putString(Filters, jsonString)
         editor.apply()
+    }
+
+    fun getFilters(): List<String> {
+        val jsonString = prefs.getString(Filters, null)
+        return if (jsonString != null) {
+            val type = object : TypeToken<List<String>>() {}.type
+            Gson().fromJson(jsonString, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun putInfo(imageUrl:String?, name:String?, nickname: String?, email: String?, phoneNum: String?, birthDate: String?) {
+        editor.putString(IMG_URL, imageUrl)
+        editor.putString(NAME, name)
+        editor.putString(NICKNAME, nickname)
+        editor.putString(EMAIL, email)
+        editor.putString(PHONENUMBER, phoneNum)
+        editor.putString(BIRTHDATE, birthDate)
+        editor.apply()
+    }
+
+    fun getName(): String? {
+        return prefs.getString(NAME, null)
+    }
+
+    fun getNickname(): String? {
+        return prefs.getString(NICKNAME, null)
+    }
+
+    fun getImgUrl(): String? {
+        return prefs.getString(IMG_URL, null)
+    }
+
+    fun getEmail(): String? {
+        return prefs.getString(EMAIL, null)
+    }
+
+    fun getPhoneNum(): String? {
+        return prefs.getString(PHONENUMBER, null)
+    }
+
+    fun getbirthDate(): String? {
+        return prefs.getString(BIRTHDATE, null)
     }
 }
